@@ -8,7 +8,12 @@ const sleep = require("util").promisify(setTimeout);
 
 const embeds = require("./embeds");
 
-client.on("ready", () => {
+const database = require("./database");
+const { finalWlEmbed } = require("./embeds");
+
+client.on("ready", async () => {
+  await database.connect();
+
   console.log(`Bot foi iniciado com sucesso`);
 
   command(client, "ping", (message) => {
@@ -90,13 +95,29 @@ client.on("ready", () => {
     message.channel.send(embeds.verifyMessage());
   });
 
-  command(client, "w", async (message) => {
+  command(client, "wlembed", (message) => {
+    message.channel.send(embeds.wLMessage());
+  });
+
+  command(client, "whitelist", async (message) => {
     const userId = message.member.user.id;
+
+    let user = await database.User.findById(userId);
+    if (user) {
+      // await message.channel.send(
+      //  // `${user.name}, seu usuário já está cadastrado! Se você continuar, seus dados serão sobrescritos.`
+      // );
+    } else {
+      user = new database.User({ _id: userId });
+    }
+
     if (message.channel.id === "734849330002788563") {
       if (!message.member.roles.cache.has("727637167370797187")) {
         const userName = message.member.user.username;
-        // const userAvatar = message.member.user.avatar;
-        // const everyoneRole = "472791218133401610";
+        const userAvatar = client.users.cache.get(userId).avatarURL();
+        const ReiceivedWlChannel = client.channels.cache.get(
+          "737080397317537822"
+        );
         const channelName = "whitelist-" + userName;
         let channel;
         try {
@@ -119,117 +140,231 @@ client.on("ready", () => {
         const categoryId = "734848350695981157";
         await channel.setParent(categoryId);
         console.log(channel.name);
-        let time;
+
         await channel.send(embeds.initialWlMsg(userId));
-        await channel
-          .awaitMessages((m) => m.author.id == userId, {
-            max: 1,
-            time: 30000,
-          })
-          .then((collected) => {
-            const name = collected.first().content;
-            console.log(name);
-          })
-          .catch(() => {
-            time = "30 segundos";
-            channel.send(embeds.timeOut(time));
-          });
+
+        let time = 180000;
+        try {
+          const collected = await channel.awaitMessages(
+            (m) => m.author.id == userId,
+            {
+              max: 1,
+              time,
+            }
+          );
+          user.name = collected.first().content;
+          console.log(user.name);
+        } catch (error) {
+          channel.send(embeds.timeOut(time));
+          await sleep(30000);
+
+          try {
+            await channel.delete();
+          } catch (error) {
+            console.log("Opa, parece que o canal já foi deletado!");
+          }
+          return;
+        }
+
         await channel.send(embeds.secondWlMsg(userId));
-        await channel
-          .awaitMessages((m) => m.author.id == userId, {
-            max: 1,
-            time: 30000,
-          })
-          .then((collected) => {
-            const age = collected.first().content;
-            console.log(age);
-          })
-          .catch(() => {
-            time = "30 segundos";
-            channel.send(embeds.timeOut(time));
-          });
+        time = 60000;
+        try {
+          const collected = await channel.awaitMessages(
+            (m) => m.author.id == userId,
+            {
+              max: 1,
+              time,
+            }
+          );
+          user.age = collected.first().content;
+          console.log(user.age);
+        } catch (error) {
+          channel.send(embeds.timeOut(time));
+          await sleep(30000);
+
+          try {
+            await channel.delete();
+          } catch (error) {
+            console.log("Opa, parece que o canal já foi deletado!");
+          }
+          return;
+        }
+
         await channel.send(embeds.thirdWlMsg(userId));
-        await channel
-          .awaitMessages((m) => m.author.id == userId, {
-            max: 1,
-            time: 30000,
-          })
-          .then((collected) => {
-            const haveMC = collected.first().content;
-            console.log(haveMC);
-          });
+        let haveMc;
+        time = 60000;
+
+        try {
+          const collected = await channel.awaitMessages(
+            (m) => m.author.id == userId,
+            {
+              max: 1,
+              time,
+            }
+          );
+          haveMc = collected.first().content;
+          console.log(haveMc);
+        } catch (error) {
+          channel.send(embeds.timeOut(time));
+          await sleep(30000);
+
+          try {
+            await channel.delete();
+          } catch (error) {
+            console.log("Opa, parece que o canal já foi deletado!");
+          }
+          return;
+        }
+
         await channel.send(embeds.fourthWlMsg(userId));
-        await channel
-          .awaitMessages((m) => m.author.id == userId, {
-            max: 1,
-            time: 30000,
-          })
-          .then((collected) => {
-            const nkname = collected.first().content;
-            console.log(nkname);
-          })
-          .catch(() => {
-            time = "30 segundos";
-            channel.send(embeds.timeOut(time));
-          });
+        time = 180000;
+
+        try {
+          const collected = await channel.awaitMessages(
+            (m) => m.author.id == userId,
+            {
+              max: 1,
+              time,
+            }
+          );
+          user.nickname = collected.first().content;
+          console.log(user.nickname);
+        } catch (error) {
+          channel.send(embeds.timeOut(time));
+          await sleep(30000);
+
+          try {
+            await channel.delete();
+          } catch (error) {
+            console.log("Opa, parece que o canal já foi deletado!");
+          }
+          return;
+        }
+
         await channel.send(embeds.fifthWlMsg(userId));
-        await channel
-          .awaitMessages((m) => m.author.id == userId, {
-            max: 1,
-            time: 30000,
-          })
-          .then((collected) => {
-            const whyPlay = collected.first().content;
-            console.log(whyPlay);
-          })
-          .catch(() => {
-            time = "30 segundos";
-            channel.send(embeds.timeOut(time));
-          });
+        let whyPlay;
+        time = 300000;
+
+        try {
+          const collected = await channel.awaitMessages(
+            (m) => m.author.id == userId,
+            {
+              max: 1,
+              time,
+            }
+          );
+          whyPlay = collected.first().content;
+          console.log(whyPlay);
+        } catch (error) {
+          channel.send(embeds.timeOut(time));
+          await sleep(30000);
+
+          try {
+            await channel.delete();
+          } catch (error) {
+            console.log("Opa, parece que o canal já foi deletado!");
+          }
+          return;
+        }
+
         await channel.send(embeds.sixthWlMsg(userId));
-        await channel
-          .awaitMessages((m) => m.author.id == userId, {
-            max: 1,
-            time: 30000,
-          })
-          .then((collected) => {
-            const gameMode = collected.first().content;
-            console.log(gameMode);
-          })
-          .catch(() => {
-            time = "30 segundos";
-            channel.send(embeds.timeOut(time));
-          });
+        let gameMode;
+        time = 300000;
+
+        try {
+          const collected = await channel.awaitMessages(
+            (m) => m.author.id == userId,
+            {
+              max: 1,
+              time,
+            }
+          );
+          gameMode = collected.first().content;
+          console.log(gameMode);
+        } catch (error) {
+          channel.send(embeds.timeOut(time));
+          await sleep(30000);
+
+          try {
+            await channel.delete();
+          } catch (error) {
+            console.log("Opa, parece que o canal já foi deletado!");
+          }
+          return;
+        }
+
         await channel.send(embeds.seventhWlMsg(userId));
-        await channel
-          .awaitMessages((m) => m.author.id == userId, {
-            max: 1,
-            time: 30000,
-          })
-          .then((collected) => {
-            const creeperQuestion = collected.first().content;
-            console.log(creeperQuestion);
-          })
-          .catch(() => {
-            time = "30 segundos";
-            channel.send(embeds.timeOut(time));
-          });
+        let whatYouDo;
+        time = 300000;
+
+        try {
+          const collected = await channel.awaitMessages(
+            (m) => m.author.id == userId,
+            {
+              max: 1,
+              time,
+            }
+          );
+          whatYouDo = collected.first().content;
+          console.log(whatYouDo);
+        } catch (error) {
+          channel.send(embeds.timeOut(time));
+          await sleep(30000);
+
+          try {
+            await channel.delete();
+          } catch (error) {
+            console.log("Opa, parece que o canal já foi deletado!");
+          }
+          return;
+        }
+
         await channel.send(embeds.octaveWlMsg(userId));
-        await channel
-          .awaitMessages((m) => m.author.id == userId, {
-            max: 1,
-            time: 30000,
-          })
-          .then((collected) => {
-            const activityGame = collected.first().content;
-            console.log(activityGame);
-          })
-          .catch(() => {
-            time = "30 segundos";
-            channel.send(embeds.timeOut(time));
-          });
+        let beActive;
+        time = 60000;
+
+        try {
+          const collected = await channel.awaitMessages(
+            (m) => m.author.id == userId,
+            {
+              max: 1,
+              time,
+            }
+          );
+          beActive = collected.first().content;
+          console.log(beActive);
+        } catch (error) {
+          channel.send(embeds.timeOut(time));
+          await sleep(30000);
+
+          try {
+            await channel.delete();
+          } catch (error) {
+            console.log("Opa, parece que o canal já foi deletado!");
+          }
+          return;
+        }
+
+        await user.save();
+
         await channel.send(embeds.finalWlMsg(userId));
+        await ReiceivedWlChannel.send(
+          finalWlEmbed(
+            userId,
+            userAvatar,
+            user.name,
+            user.age,
+            haveMc,
+            user.nickname,
+            whyPlay,
+            gameMode,
+            whatYouDo,
+            beActive
+          )
+        );
+
         await sleep(30000);
+
         try {
           await channel.delete();
         } catch (error) {
@@ -251,6 +386,45 @@ client.on("ready", () => {
         await msg.delete();
       } catch (error) {
         console.log("Opa, parece que mensagem já foi deletada!");
+      }
+    }
+  });
+
+  command(client, "aprovar", async (message) => {
+    const { mentions } = message;
+    const whitelistRole = "727637167370797187";
+    //const syntax = "!aprovar <@>";
+    if (message.member.hasPermission("ADMINISTRATOR")) {
+      const target = mentions.members.first();
+      const targetId = target.id;
+      console.log(target);
+      console.log(targetId);
+      if (targetId) {
+        if (!target.roles.cache.has(whitelistRole)) {
+          let user = await database.User.findById(targetId);
+          if (user) {
+            const aprovedChannel = client.channels.cache.get(
+              "734850572376866978"
+            );
+            const consoleChannel = client.channels.cache.get(
+              "735806997601058876"
+            );
+            //await target.roles.add(whitelistRole);
+            consoleChannel.send(`whitelist add ${user.nickname}`);
+            await aprovedChannel.send(
+              embeds.aprovedEmbed(targetId, user.nickname)
+            );
+            await target.send(embeds.aprovedEmbedPv(targetId, user.nickname));
+          } else {
+            await message.channel.send(
+              `O usuário <@${targetId}> não existe no banco de dados`
+            );
+          }
+        } else {
+          await message.channel.send(
+            `O usuário <@${targetId}> já possui Whitelist`
+          );
+        }
       }
     }
   });

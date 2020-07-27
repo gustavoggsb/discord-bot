@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 
 const logo =
   "https://vignette.wikia.nocookie.net/minecraft/images/e/e7/BlueFire.gif";
+const blackgroung = "```";
 
 module.exports = {
   verifyMessage: () => {
@@ -12,6 +13,16 @@ module.exports = {
       )
       .setThumbnail(logo)
       .setFooter("*Reaja abaixo para continuar.")
+      .setColor("#00AAFF");
+  },
+  wLMessage: () => {
+    return new Discord.MessageEmbed()
+      .setTitle("Sistema de Whitelist")
+      .setDescription(
+        `Sistema desenvolvido exclusivamente para o servidor **Buglândia**.\n\nAqui você poderá iniciar sua **Whitelist**.\nBasta dar o comando:\n\n  ${blackgroung}!whitelist${blackgroung}\n\nO bot irá te chamar para fazer algumas perguntas.\nResponda atenciosamente, e tenha o **Nickname** do seu personagem em mãos.\nÉ importante que quando solicitado você escreva ele de forma correta, respeitando letras maiúsculas e caractéres especiais.\n\n Boa sorte!!\n\n`
+      )
+      .setThumbnail(logo)
+      .setFooter("Atenciosamente Buglândia")
       .setColor("#00AAFF");
   },
   initialWlMsg: (userId) => {
@@ -72,7 +83,7 @@ module.exports = {
     return new Discord.MessageEmbed()
       .setTitle("Sistema de Whiteslist")
       .setDescription(
-        `Perfeito <@${userId}>!\nRegistrei sua resposta.\n\n- Supondo que Creeper exploda em você e danifique o chão.\nO que você **deve fazer**?\n\n\n<a:loading:736686995258212472> Você tem 3 minutos para responder`
+        `Perfeito <@${userId}>!\nRegistrei sua resposta.\n\n- Supondo que Creeper exploda em você e danifique o chão.\nO que você **deve fazer**?\n\n\n<a:loading:736686995258212472> Você tem 5 minutos para responder`
       )
       .setThumbnail(logo)
       .setColor("#00AAFF");
@@ -144,7 +155,6 @@ module.exports = {
       .setColor("#00AAFF");
   },
   aprovedEmbedPv: (targetId, nickName) => {
-    const blackgroung = "```";
     return new Discord.MessageEmbed()
       .setTitle(`Aprovado!!`)
       .setDescription(
