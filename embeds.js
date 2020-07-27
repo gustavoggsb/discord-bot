@@ -2,7 +2,7 @@ const Discord = require("discord.js");
 
 const logo =
   "https://vignette.wikia.nocookie.net/minecraft/images/e/e7/BlueFire.gif";
-const blackgroung = "```";
+const blackgroung = "`";
 
 module.exports = {
   verifyMessage: () => {
@@ -119,40 +119,52 @@ module.exports = {
     beActive
   ) => {
     return new Discord.MessageEmbed()
-      .setTitle(`Whitelist de <@${userId}>`)
-      .setDescription()
+      .setTitle(`Whitelist de ${name}`)
       .setThumbnail(userAvatar)
       .addFields(
-        { name: "Nome", value: `${name}` },
-        { name: "Idade", value: `${age}` },
         {
-          name: "Possui Minecraft Original?",
-          value: `${haveMc}`,
+          name: "Nome",
+          value: `${blackgroung}${name}${blackgroung}`,
           inline: false,
         },
-        { name: "Nickname", value: `${nickName}`, inline: false },
+        {
+          name: "Idade",
+          value: `${blackgroung}${age}${blackgroung}`,
+          inline: false,
+        },
+        {
+          name: "Possui Minecraft Original?",
+          value: `${blackgroung}${haveMc}${blackgroung}`,
+          inline: false,
+        },
+        {
+          name: "Nickname",
+          value: `${blackgroung}${nickName}${blackgroung}`,
+          inline: false,
+        },
         {
           name: "Por que quer jogar em nosso servidor?",
-          value: `${whyPlay}`,
+          value: `${blackgroung}${whyPlay}${blackgroung}`,
           inline: false,
         },
         {
           name: "Descreva seu modo de jogo",
-          value: `${gameMode}`,
+          value: `${blackgroung}${gameMode}${blackgroung}`,
           inline: false,
         },
         {
           name: "Se um Creeper explodir o que você faz?",
-          value: `${whatYouDo}`,
+          value: `${blackgroung}${whatYouDo}${blackgroung}`,
           inline: false,
         },
         {
           name: "Você seria um jogador ativo?",
-          value: `${beActive}`,
+          value: `${blackgroung}${beActive}${blackgroung}`,
           inline: false,
         }
       )
-      .setColor("#00AAFF");
+      .setColor("#00AAFF")
+      .setFooter(`!aprovar <@${userId}> | !reprovar <@${userId}>`);
   },
   aprovedEmbedPv: (targetId, nickName) => {
     return new Discord.MessageEmbed()
@@ -176,14 +188,25 @@ module.exports = {
       .setColor("#00AAFF")
       .setFooter(`Atenciosamente Buglândia`);
   },
-  aprovedEmbed: (targetId, nickName) => {
-    const blackgroung = "```";
+  aprovedEmbed: (targetId, nickName, author) => {
     return new Discord.MessageEmbed()
       .setTitle(`Aprovado!!`)
       .setDescription(
         `**Parabéns <@${targetId}>!!!**\n\nVocê acaba de ser aprovado em nosso servidor!\n\n**Nickname:**${blackgroung}${nickName}${blackgroung}\n\n`
       )
       .setThumbnail(logo)
+      .addField("Aprovado por:", `<@${author}>`, true)
+      .setColor("#00AAFF")
+      .setFooter(`Atenciosamente Buglândia`);
+  },
+  reprovedEmbed: (targetId, author) => {
+    return new Discord.MessageEmbed()
+      .setTitle(`Reprovado!!`)
+      .setDescription(
+        `**Que triste <@${targetId}>!**\n\nVocê não passou na whitelist do nosso servidor!\nMas fique tranquilo, você pode tentar novamente a qualquer momento.\nTente dessa vez ser um pouco mais atencioso e usar respostas mais elaboradas\n\nTe aguardo novamente! 😉`
+      )
+      .setThumbnail(logo)
+      .addField("Reprovado por:", `<@${author}>`, true)
       .setColor("#00AAFF")
       .setFooter(`Atenciosamente Buglândia`);
   },
@@ -209,6 +232,14 @@ module.exports = {
         )}, operação cancelada`
       )
       .setColor("#00AAFF");
+  },
+  wlChannelMsgWrong: (author) => {
+    return new Discord.MessageEmbed()
+      .setTitle(`Comando errado!`)
+      .setDescription(
+        `<@${author}>.\nApenas é permitido digitar neste canal o comando: ${blackgroung}!whitelist${blackgroung}`
+      )
+      .setColor("#FF0000");
   },
 };
 
