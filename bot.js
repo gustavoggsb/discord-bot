@@ -4,6 +4,9 @@ const client = new Discord.Client({
 });
 const config = require("./config.json");
 const command = require("./command");
+const sleep = require("util").promisify(setTimeout);
+
+const embeds = require("./embeds");
 
 client.on("ready", () => {
   console.log(`Bot foi iniciado com sucesso`);
@@ -21,10 +24,22 @@ client.on("ready", () => {
   });
 
   command(client, ["clear", "limpar"], (message) => {
+    const { content } = message;
+    const split = content.trim().split(" ");
+    const args = split[1];
+    const syntax = "!limpar <número de mensagens a serem apagadas | all>";
+    console.log(args);
     if (message.member.hasPermission("ADMINISTRATOR")) {
-      message.channel.messages.fetch().then((results) => {
-        message.channel.bulkDelete(results);
-      });
+      if (split.length > 2 || split.length === 1) {
+        message.channel.send(`${message.author}, use: ` + syntax);
+      }
+      if (args !== 0 && split.length === 2) {
+        try {
+          message.channel.bulkDelete(args);
+        } catch (error) {
+          console.log("Erro ao apagar mensagens");
+        }
+      }
     } else {
       message.channel.send(
         `Você não tem permissão para executar este comando!`
@@ -71,48 +86,18 @@ client.on("ready", () => {
       });
   });
 
-  command(client, "embed", (message) => {
-    const logo =
-      "https://vignette.wikia.nocookie.net/minecraft/images/e/e7/BlueFire.gif";
-    const embed = new Discord.MessageEmbed()
-      .setTitle("Sistema de Proteção contra BOTS")
-      //.setURL('https://media2.giphy.com/media/lpHQvZu6stHKo/giphy.gif')
-      //.setAuthor(message.author.username)
-      //.setImage(logo)
-      .setDescription(
-        "Sistema desenvolvido exclusivamente para o servidor **Buglândia**. \nApós esta etapa poderá prosseguir com sua **Whitelist**. \nObrigado!! "
-      )
-      .setThumbnail(logo)
-      .setFooter("*Reaja abaixo para continuar.")
-      .setColor("#00AAFF");
-    /*.addFields(
-    {
-      name: '1',
-      value: '###',
-      inline: true,
-    },
-    {
-      name: '2',
-      value: '###',
-      inline: true,
-    },
-    {
-      name: '3',
-      value: '###',
-      inline: true,
-    }
-  )*/
-    message.channel.send(embed);
+  command(client, "verify", (message) => {
+    message.channel.send(embeds.verifyMessage());
   });
 
   command(client, "w", async (message) => {
+    const userId = message.member.user.id;
     if (message.channel.id === "734849330002788563") {
       if (!message.member.roles.cache.has("727637167370797187")) {
-        const userId = message.member.user.id;
-        // const userName = message.member.user.username;
+        const userName = message.member.user.username;
         // const userAvatar = message.member.user.avatar;
         // const everyoneRole = "472791218133401610";
-        const channelName = "whitelist-" + userId;
+        const channelName = "whitelist-" + userName;
         let channel;
         try {
           channel = await message.guild.channels.create(channelName, {
@@ -134,22 +119,139 @@ client.on("ready", () => {
         const categoryId = "734848350695981157";
         await channel.setParent(categoryId);
         console.log(channel.name);
-        const message1 = `Olá <@${userId}>`;
-        await channel.send(message1);
+        let time;
+        await channel.send(embeds.initialWlMsg(userId));
+        await channel
+          .awaitMessages((m) => m.author.id == userId, {
+            max: 1,
+            time: 30000,
+          })
+          .then((collected) => {
+            const name = collected.first().content;
+            console.log(name);
+          })
+          .catch(() => {
+            time = "30 segundos";
+            channel.send(embeds.timeOut(time));
+          });
+        await channel.send(embeds.secondWlMsg(userId));
+        await channel
+          .awaitMessages((m) => m.author.id == userId, {
+            max: 1,
+            time: 30000,
+          })
+          .then((collected) => {
+            const age = collected.first().content;
+            console.log(age);
+          })
+          .catch(() => {
+            time = "30 segundos";
+            channel.send(embeds.timeOut(time));
+          });
+        await channel.send(embeds.thirdWlMsg(userId));
+        await channel
+          .awaitMessages((m) => m.author.id == userId, {
+            max: 1,
+            time: 30000,
+          })
+          .then((collected) => {
+            const haveMC = collected.first().content;
+            console.log(haveMC);
+          });
+        await channel.send(embeds.fourthWlMsg(userId));
+        await channel
+          .awaitMessages((m) => m.author.id == userId, {
+            max: 1,
+            time: 30000,
+          })
+          .then((collected) => {
+            const nkname = collected.first().content;
+            console.log(nkname);
+          })
+          .catch(() => {
+            time = "30 segundos";
+            channel.send(embeds.timeOut(time));
+          });
+        await channel.send(embeds.fifthWlMsg(userId));
+        await channel
+          .awaitMessages((m) => m.author.id == userId, {
+            max: 1,
+            time: 30000,
+          })
+          .then((collected) => {
+            const whyPlay = collected.first().content;
+            console.log(whyPlay);
+          })
+          .catch(() => {
+            time = "30 segundos";
+            channel.send(embeds.timeOut(time));
+          });
+        await channel.send(embeds.sixthWlMsg(userId));
+        await channel
+          .awaitMessages((m) => m.author.id == userId, {
+            max: 1,
+            time: 30000,
+          })
+          .then((collected) => {
+            const gameMode = collected.first().content;
+            console.log(gameMode);
+          })
+          .catch(() => {
+            time = "30 segundos";
+            channel.send(embeds.timeOut(time));
+          });
+        await channel.send(embeds.seventhWlMsg(userId));
+        await channel
+          .awaitMessages((m) => m.author.id == userId, {
+            max: 1,
+            time: 30000,
+          })
+          .then((collected) => {
+            const creeperQuestion = collected.first().content;
+            console.log(creeperQuestion);
+          })
+          .catch(() => {
+            time = "30 segundos";
+            channel.send(embeds.timeOut(time));
+          });
+        await channel.send(embeds.octaveWlMsg(userId));
+        await channel
+          .awaitMessages((m) => m.author.id == userId, {
+            max: 1,
+            time: 30000,
+          })
+          .then((collected) => {
+            const activityGame = collected.first().content;
+            console.log(activityGame);
+          })
+          .catch(() => {
+            time = "30 segundos";
+            channel.send(embeds.timeOut(time));
+          });
+        await channel.send(embeds.finalWlMsg(userId));
+        await sleep(30000);
         try {
-          setTimeout(async () => {
-            await channel.delete();
-          }, 30000);
+          await channel.delete();
         } catch (error) {
           console.log("Opa, parece que o canal já foi deletado!");
         }
       } else {
-        console.log(`Já possui whitelist`);
+        const msg = message.channel.send(embeds.findWlRole(userId));
+        await sleep(15000);
+        try {
+          await msg.delete();
+        } catch (error) {
+          console.log("Opa, parece que mensagem já foi deletada!");
+        }
       }
     } else {
-      message.channel.send(
-        `Este comando somente pode ser realizado\nno canal #734849330002788563!`
-      );
+      const msg = message.channel.send(embeds.wrongWlchannel(userId));
+      await sleep(15000);
+      try {
+        await msg.delete();
+      } catch (error) {
+        console.log("Opa, parece que mensagem já foi deletada!");
+      }
     }
   });
 });
