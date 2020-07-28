@@ -4,7 +4,7 @@ const client = new Discord.Client({
 });
 const config = require("./config.json");
 const command = require("./command");
-const sleep = m => new Promise(r => setTimeout(r, m))
+const sleep = (m) => new Promise((r) => setTimeout(r, m));
 
 const embeds = require("./embeds");
 
@@ -20,75 +20,37 @@ client.on("ready", async () => {
     message.channel.send("Pong!");
   });
 
-  command(client, "servers", (message) => {
-    client.guilds.cache.forEach((guild) => {
-      message.channel.send(
-        `${guild.name} tem um total de ${guild.memberCount} membros!`
+  command(client, "clear", async (message) => {
+    if (message.member.hasPermission("ADMINISTRATOR")) {
+      message.channel.messages.fetch().then((results) => {
+        message.channel.bulkDelete(results);
+      });
+    } else {
+      const msg = await message.channel.send(
+        `Você não tem permissão para executar este comando!`
       );
-    });
+      await sleep(7000);
+      await msg.delete();
+    }
   });
 
-  command(client, ["clear", "limpar"], (message) => {
+  command(client, "limpar", async (message) => {
     const { content } = message;
     const split = content.trim().split(" ");
     const args = split[1];
-    const syntax = "!limpar <número de mensagens a serem apagadas | all>";
-    console.log(args);
     if (message.member.hasPermission("ADMINISTRATOR")) {
-      if (split.length > 2 || split.length === 1) {
-        message.channel.send(`${message.author}, use: ` + syntax);
-      }
-      if (args !== 0 && split.length === 2) {
-        try {
-          message.channel.bulkDelete(args);
-        } catch (error) {
-          console.log("Erro ao apagar mensagens");
-        }
+      try {
+        message.channel.bulkDelete(args);
+      } catch (error) {
+        console.log("Erro ao apagar mensagens");
       }
     } else {
-      message.channel.send(
+      const msg = await message.channel.send(
         `Você não tem permissão para executar este comando!`
       );
+      await sleep(7000);
+      await msg.delete();
     }
-  });
-
-  command(client, "status", (message) => {
-    if (message.member.hasPermission("ADMINISTRATOR")) {
-      const content = message.content.replace("!status ", "");
-
-      client.user.setPresence({
-        activity: {
-          name: content,
-          type: 0,
-        },
-      });
-    } else {
-      message.channel.send(
-        `Você não tem permissão para executar este comando!`
-      );
-    }
-  });
-
-  command(client, "newtextchannel", (message) => {
-    const name = message.content.replace("!newtextchannel ", "");
-    message.guild.channels
-      .create(name, {
-        type: "text",
-      })
-      .then((channel) => {
-        console.log(channel);
-      });
-  });
-
-  command(client, "newvoicechannel", (message) => {
-    const name = message.content.replace("!newvoicechannel ", "");
-    message.guild.channels
-      .create(name, {
-        type: "voice",
-      })
-      .then((channel) => {
-        console.log(channel);
-      });
   });
 
   command(client, "verify", (message) => {
@@ -385,19 +347,24 @@ client.on("ready", async () => {
               "734850572376866978"
             );
             await target.roles.add("727637167370797187");
+            await target.setNickname(user.nickname);
             await aprovedChannel.send(
               embeds.aprovedEmbed(targetId, user.nickname, author)
             );
             await target.send(embeds.aprovedEmbedPv(targetId, user.nickname));
           } else {
-            await message.channel.send(
+            const msg = await message.channel.send(
               `O usuário <@${targetId}> não existe no banco de dados`
             );
+            await sleep(7000);
+            await msg.delete();
           }
         } else {
-          await message.channel.send(
+          const msg = await message.channel.send(
             `O usuário <@${targetId}> já possui Whitelist`
           );
+          await sleep(7000);
+          await msg.delete();
         }
       }
     }
@@ -423,14 +390,18 @@ client.on("ready", async () => {
               );
               await target.send(embeds.reprovedEmbed(targetId, author));
             } else {
-              await message.channel.send(
+              const msg = await message.channel.send(
                 `O usuário <@${targetId}> não existe no banco de dados`
               );
+              await sleep(7000);
+              await msg.delete();
             }
           } else {
-            await message.channel.send(
+            const msg = await message.channel.send(
               `O usuário <@${targetId}> já possui Whitelist`
             );
+            await sleep(7000);
+            await msg.delete();
           }
         }
       }
