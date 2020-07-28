@@ -13,7 +13,8 @@
   "dependencies": {
     "discord.js": "^12.2.0",
     "mongodb": "^3.5.9",
-    "mongoose": "^5.9.25"
+    "mongoose": "^5.9.26",
+    "util": "^0.12.3"
   },
   "devDependencies": {
     "eslint": "^7.5.0"
