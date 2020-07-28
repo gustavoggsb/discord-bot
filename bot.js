@@ -4,7 +4,7 @@ const client = new Discord.Client({
 });
 const config = require("./config.json");
 const command = require("./command");
-const sleep = require("util").promisify(setTimeout);
+const sleep = m => new Promise(r => setTimeout(r, m))
 
 const embeds = require("./embeds");
 
