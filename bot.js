@@ -2,15 +2,15 @@ const Discord = require("discord.js"); //baixar a lib
 const client = new Discord.Client({
   partials: ["MESSAGE", "CHANNEL", "REACTION"],
 });
-const config = require("../res/config.json");
-const command = require("./plugins/command");
-const { sleep } = require("./plugins/util");
+const config = require("./res/config.json");
+const command = require("./lib/plugins/command");
+const { sleep } = require("./lib/plugins/util");
 
-const embeds = require("./plugins/embeds");
+const embeds = require("./lib/plugins/embeds");
 
-const database = require("./plugins/database");
+const database = require("./lib/plugins/database");
 
-const commands = require("./modules");
+const commands = require("./lib/modules");
 
 client.on("ready", async () => {
   await database.connect();
