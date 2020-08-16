@@ -1,13 +1,13 @@
 {
     "configurations": [
         {
-            "type": "node",
-            "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}/bot.js",
+            "program": "${workspaceFolder}/lib/bot.js",
+            "request": "launch",
             "skipFiles": [
                 "<node_internals>/**"
-            ]
+            ],
+            "type": "pwa-node"
         }
     ]
 }
